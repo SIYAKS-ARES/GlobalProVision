@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canlı Nesne Tespiti ve Tehlike Analizi</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #video-container { width: 80%; margin: auto; border: 1px solid #ccc; }
+        #video-feed { width: 100%; height: auto; display: block; }
+        #data-container { margin-top: 20px; padding: 15px; border: 1px solid #eee; background-color: #f9f9f9; }
+        .danger-high { color: red; font-weight: bold; }
+        .danger-medium { color: orange; font-weight: bold; }
+        .danger-low { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Canlı Nesne Tespiti ve Tehlike Analizi</h1>
+
+    <div id="video-container">
+        <img id="video-feed" src="{{ url_for('video_feed') }}">
+    </div>
+
+    <div id="data-container">
+        <h2>Tespit Verileri</h2>
+        <p><strong>İnsan Sayısı:</strong> <span id="person-count">0</span></p>
+        <h3>Tespit Edilen Nesneler:</h3>
+        <ul id="detected-objects-list">
+            <li>Yükleniyor...</li>
+        </ul>
+        <p><strong>Tehlike Oranı:</strong> <span id="danger-percentage">0%</span></p>
+    </div>
+
+    <script>
+        function fetchData() {
+            fetch('/data_feed')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('person-count').innerText = data.detection_results.insan_sayisi;
+
+                    const objectList = document.getElementById('detected-objects-list');
+                    objectList.innerHTML = ''; // Listeyi temizle
+                    for (const [objectName, count] of Object.entries(data.detection_results.nesneler)) {
+                        const listItem = document.createElement('li');
+                        listItem.innerText = `${objectName}: ${count}`;
+                        objectList.appendChild(listItem);
+                    }
+
+                    const dangerPercentageSpan = document.getElementById('danger-percentage');
+                    dangerPercentageSpan.innerText = `${data.danger_percentage.toFixed(2)}%`;
+                    
+                    // Tehlike oranına göre renk kodu ekle
+                    dangerPercentageSpan.className = ''; // Mevcut sınıfları temizle
+                    if (data.danger_percentage > 70) {
+                        dangerPercentageSpan.classList.add('danger-high');
+                    } else if (data.danger_percentage > 30) {
+                        dangerPercentageSpan.classList.add('danger-medium');
+                    } else {
+                        dangerPercentageSpan.classList.add('danger-low');
+                    }
+                })
+                .catch(error => console.error('Veri çekme hatası:', error));
+        }
+
+        // Her 500 milisaniyede bir verileri güncelle
+        setInterval(fetchData, 200);
+
+        // İlk yüklemede verileri çek
+        fetchData();
+    </script>
+</body>
+</html>
