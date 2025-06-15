@@ -1,17 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, List
 from data.dummy_data import DummyDetectionService
-from services.hybrid_detection_service import HybridDetectionService
-import logging
-
-# Logging konfigürasyonu
-logger = logging.getLogger(__name__)
 
 # API router'ını oluştur
 router = APIRouter()
-
-# Hibrit detection servisini başlat
-hybrid_service = HybridDetectionService()
 
 @router.get("/health")
 async def health_check() -> Dict[str, str]:
