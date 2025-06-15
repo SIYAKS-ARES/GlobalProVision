@@ -141,4 +141,4 @@ if __name__ == '__main__':
     frame_processor_thread.daemon = True
     frame_processor_thread.start()
 
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5001, debug=False)
