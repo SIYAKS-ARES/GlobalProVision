@@ -7,6 +7,7 @@ import time
 # Ayarları danger_threshold.py dosyasından içe aktar
 from danger_threshold import (
     TEHLIKELI_NESNELER,
+    ANIMAL_CLASSES, # <-- YENİ İTHALAT
     DEFAULT_CONF_THRESHOLD,
     KNIFE_CONF_THRESHOLD,
     PERSON_DANGER_SCORE,
@@ -23,6 +24,13 @@ except Exception as e:
     print(f"YOLO modeli yüklenirken bir hata oluştu: {e}")
     print(f"Lütfen '{model_path}' yolunda model dosyasının olduğundan emin olun.")
     exit()
+
+# Sadece gösterilmesine izin verilen sınıfları oluşturalım
+# 'person' sınıfını, tehlikeli nesneleri ve hayvan sınıflarını birleştiriyoruz.
+ALLOWED_CLASSES = ['person'] + TEHLIKELI_NESNELER + ANIMAL_CLASSES
+# Yinelenenleri kaldırmak için bir set'e dönüştürüp sonra listeye çevirebiliriz
+ALLOWED_CLASSES = list(set(ALLOWED_CLASSES))
+
 
 current_frame = None
 detection_results = {}
@@ -61,24 +69,37 @@ def process_frame():
                 class_name = model.names[class_id]
                 confidence = float(box.conf[0])
 
+                # Sınıfa özel güven eşiği kontrolü
                 if class_name == 'knife':
                     if confidence < KNIFE_CONF_THRESHOLD:
-                        continue
+                        continue # Bıçak için belirlenen eşiğin altındaysa atla
                 elif confidence < DEFAULT_CONF_THRESHOLD:
-                    continue
+                    continue # Diğer nesneler için belirlenen eşiğin altındaysa atla
                 
+                # --- YENİ EKLENEN FİLTRELEME MANTIĞI ---
+                # Sadece izin verilen sınıfları işle ve göster
+                if class_name not in ALLOWED_CLASSES:
+                    continue # İzin verilmeyen bir sınıfsa atla
+                # --- FİLTRELEME MANTIĞI BİTİŞİ ---
+
+                # Buradan sonrası sadece belirlenen eşikleri ve izin verilen sınıfları geçen tespitler için çalışacak
+                
+                # Kutuyu çiz
                 cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                 
+                # Etiketi ve skoru yazdır
                 label = f"{class_name}: {confidence:.2f}"
                 cv2.putText(annotated_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
+                # Nesne ve insan sayısını güncelle
                 detected_objects_count[class_name] = detected_objects_count.get(class_name, 0) + 1
                 if class_name == 'person':
                     person_count += 1
                 
+                # Tehlikeli nesne kontrolü
                 if class_name in TEHLIKELI_NESNELER:
                     has_dangerous_object = True
-                    cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                    cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 0, 255), 2) # Tehlikeli nesneyi kırmızı kutu ile göster
                     cv2.putText(annotated_frame, "TEHLIKELI!", (x1, y1 - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
         calculated_danger_percentage = 0
