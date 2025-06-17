@@ -282,6 +282,7 @@ setInterval(getDetectedObjects, 500);
 
 ## 🧪 Test Stratejisi
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 ### ✅ Mevcut Testler
 
@@ -417,6 +418,8 @@ wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt
    - Monitoring ve logging
    - Auto-scaling
 =======
+=======
+>>>>>>> Stashed changes
 
 ### ✅ Mevcut Testler
 
@@ -524,4 +527,7 @@ wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt
 6. **Monitoring**: Logging ve metrics sistemi
 7. **CI/CD Pipeline**: Otomatik test ve deployment
 8. **Mobile App**: React Native ile mobil uygulama
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
