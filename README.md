@@ -281,6 +281,7 @@ setInterval(getDetectedObjects, 500);
 - PR üzerinden merge yapılır. main'e doğrudan yazılmaz.
 
 ## 🧪 Test Stratejisi
+<<<<<<< Updated upstream
 
 ### ✅ Mevcut Testler
 
@@ -415,3 +416,112 @@ wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt
    - CI/CD pipeline
    - Monitoring ve logging
    - Auto-scaling
+=======
+
+### ✅ Mevcut Testler
+
+```bash
+# Backend API testleri
+cd backend
+python test_api.py        # Unit testler
+python test_endpoints.py  # Endpoint testleri
+
+# Frontend testleri
+cd frontend  
+npm test                  # React component testleri
+```
+
+### 🔍 Test Kategorileri
+
+- **Unit Testler**: Tekil fonksiyon testleri
+- **Integration Testler**: Modüller arası iletişim
+- **End-to-End Testler**: Tam sistem senaryoları
+- **Performance Testler**: Yanıt süresi ve kaynak kullanımı
+
+## 🚨 Sorun Giderme
+
+### ❓ Sık Karşılaşılan Sorunlar
+
+#### 1. Kamera Erişim Sorunu
+```bash
+# Kamera iznini kontrol edin
+# macOS: Sistem Tercihleri > Güvenlik ve Gizlilik > Kamera
+# Windows: Ayarlar > Gizlilik > Kamera
+```
+
+#### 2. Port Çakışması
+```bash
+# Kullanımda olan portları kontrol edin
+lsof -i :5000  # Detection modülü
+lsof -i :8000  # Backend API
+lsof -i :3000  # Frontend
+
+# Alternatif port kullanımı
+python app.py --port 5001
+```
+
+#### 3. YOLO Model İndirme Sorunu
+```bash
+# Manuel model indirme
+cd detection/models
+wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt
+```
+
+#### 4. CORS Hatası
+```bash
+# Backend CORS ayarlarını kontrol edin
+# app.py dosyasında origins listesini güncelleyin
+```
+
+### 📞 Destek
+
+- **Backend Sorunları**: Backend takımı ile iletişime geçin
+- **Detection Sorunları**: AI/ML takımı ile iletişime geçin  
+- **Frontend Sorunları**: Frontend takımı ile iletişime geçin
+
+## 🤝 Katkıda Bulunma
+
+### 📝 Geliştirme İş Akışı
+
+1. **Feature Branch Oluşturun**:
+   ```bash
+   git checkout -b feature/yeni-ozellik
+   ```
+
+2. **Kodunuzu Yazın ve Test Edin**:
+   ```bash
+   # Testleri çalıştırın
+   python test_*.py
+   npm test
+   ```
+
+3. **Commit ve Push**:
+   ```bash
+   git add .
+   git commit -m "feat: yeni özellik eklendi"
+   git push origin feature/yeni-ozellik
+   ```
+
+4. **Pull Request Oluşturun**:
+   - Açıklayıcı başlık ve açıklama
+   - Test sonuçları ekleyin
+   - Code review bekleyin
+
+### ✨ Kod Standartları
+
+- **Python**: PEP 8 standardı
+- **JavaScript**: ESLint kuralları
+- **Commit Mesajları**: Conventional Commits formatı
+- **Dokümantasyon**: Her yeni özellik için README güncellemesi
+
+## 📈 Sonraki Adımlar
+
+1. **Frontend Geliştirme**: React/Vue.js ile web arayüzü
+2. **Kamera Feed Entegrasyonu**: Backend'den video stream
+3. **Real-time Updates**: WebSocket veya Server-Sent Events
+4. **Production Deployment**: Docker containerization
+5. **Güvenlik**: Authentication ve rate limiting
+6. **Monitoring**: Logging ve metrics sistemi
+7. **CI/CD Pipeline**: Otomatik test ve deployment
+8. **Mobile App**: React Native ile mobil uygulama
+>>>>>>> Stashed changes
