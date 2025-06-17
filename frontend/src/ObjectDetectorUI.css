@@ -1,0 +1,180 @@
+body {
+    background-color: #f0f2f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.detector-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    width: 100%;
+    max-width: 900px;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 24px;
+    font-size: 2em;
+}
+
+h2,
+h3 {
+    color: #555;
+    padding-bottom: 8px;
+}
+
+.main-content {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.camera-section {
+    flex: 3;
+    display: flex;
+}
+
+.camera-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000000;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.list-section {
+    flex: 2;
+    background-color: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.object-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.object-item {
+    background-color: #e9ecef;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #495057;
+}
+
+.no-objects {
+    color: #888;
+    font-style: italic;
+}
+
+.risk-section {
+    margin-top: 20px;
+}
+
+.risk-display {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.risk-label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.risk-progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.risk-progress-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+}
+
+.camera-feed {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.camera-section {
+    position: relative;
+}
+
+.processing-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.error-banner {
+    background-color: #e74c3c;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: bold;
+}
+
+.stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.stats-header h2 {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.live-stats {
+    background-color: #e9ecef;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #495057;
+}
