@@ -1,72 +1,138 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from typing import Dict, List
-from data.dummy_data import DummyDetectionService
+from services.detection_service import DetectionService
+import logging
+
+# Logging konfigürasyonu
+logger = logging.getLogger(__name__)
 
 # API router'ını oluştur
 router = APIRouter()
 
+# Detection servisini başlat
+detection_service = DetectionService()
+
 @router.get("/health")
 async def health_check() -> Dict[str, str]:
     """
-    API'nin sağlık durumunu kontrol eder.
-
+    API'nin ve detection modülünün sağlık durumunu kontrol eder.
+    
     Returns:
-        dict: API'nin durumu
+        dict: API ve detection modülünün durumu
     """
-    return {"status": "ok"}
+    detection_status = detection_service.health_check()
+    
+    return {
+        "status": "ok",
+        "detection_service": "connected" if detection_status else "disconnected",
+        "timestamp": detection_service.get_detected_objects()["timestamp"]
+    }
 
 
 @router.get("/detected-objects")
 async def get_detected_objects() -> Dict:
     """
-    Anlık olarak algılanan nesneleri döner.
-    Şu an dummy veri kullanıyor, ileride gerçek detection servisi bağlanacak.
-
+    Detection modülünden gerçek zamanlı olarak algılanan nesneleri döner.
+    Frontend bu endpoint'i sürekli çağırarak güncel verileri alacak.
+    
     Returns:
-        dict: Timestamp ve algılanan nesneleri içeren veri
+        dict: Timestamp, algılanan nesneler, risk analizi ve kişi sayısı
     """
     try:
-        detection_result = DummyDetectionService.get_detected_objects()
+        detection_result = detection_service.get_detected_objects()
+        logger.info(f"Frontend'e gönderilen veri: {detection_result}")
         return detection_result
+        
     except Exception as e:
+        logger.error(f"Detection servisi hatası: {str(e)}")
         raise HTTPException(
-            status_code=500,
+            status_code=500, 
             detail=f"Detection servisi hatası: {str(e)}"
         )
 
 
-@router.get("/detected-objects/test")
-async def test_detection(objects: str = "Bıçak,Telefon") -> Dict:
+@router.get("/detected-objects/risk")
+async def get_risk_analysis() -> Dict:
     """
-    Test amaçlı endpoint - belirli nesnelerin algılandığını simüle eder.
-
-    Args:
-        objects: Virgülle ayrılmış nesne listesi (örn: "Bıçak,Telefon,Kalem")
-
+    Sadece risk analizi verilerini döner.
+    
     Returns:
-        dict: Timestamp ve belirtilen nesneleri içeren veri
+        dict: Risk yüzdesi ve tehlike durumu
     """
     try:
-        # Virgülle ayrılmış string'i listeye çevir
-        object_list = [obj.strip() for obj in objects.split(",")]
-        detection_result = DummyDetectionService.get_specific_detection(object_list)
-        return detection_result
+        detection_result = detection_service.get_detected_objects()
+        
+        risk_level = "DÜŞÜK"
+        if detection_result["danger_percentage"] > 70:
+            risk_level = "YÜKSEK"
+        elif detection_result["danger_percentage"] > 30:
+            risk_level = "ORTA"
+        
+        return {
+            "timestamp": detection_result["timestamp"],
+            "danger_percentage": detection_result["danger_percentage"],
+            "risk_level": risk_level,
+            "person_count": detection_result["person_count"],
+            "detected_dangerous_objects": [
+                obj for obj in detection_result["detected"] 
+                if obj in ["Bıçak", "Silah", "Makas"]
+            ]
+        }
+        
     except Exception as e:
+        logger.error(f"Risk analizi hatası: {str(e)}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Test detection hatası: {str(e)}"
+            status_code=500, 
+            detail=f"Risk analizi hatası: {str(e)}"
         )
 
 
-@router.get("/detected-objects/available")
-async def get_available_objects() -> Dict[str, List[str]]:
+@router.get("/detected-objects/summary")
+async def get_detection_summary() -> Dict:
     """
-    Algılanabilir nesnelerin listesini döner.
-
+    Algılanan nesnelerin özet halini döner.
+    
     Returns:
-        dict: Mevcut algılanabilir nesneler
+        dict: Nesne sayıları ve genel durum
     """
+    try:
+        detection_result = detection_service.get_detected_objects()
+        
+        # Nesneleri say
+        object_counts = {}
+        for obj in detection_result["detected"]:
+            object_counts[obj] = object_counts.get(obj, 0) + 1
+        
+        return {
+            "timestamp": detection_result["timestamp"],
+            "total_objects": len(detection_result["detected"]),
+            "object_counts": object_counts,
+            "person_count": detection_result["person_count"],
+            "danger_percentage": detection_result["danger_percentage"],
+            "unique_objects": len(object_counts)
+        }
+        
+    except Exception as e:
+        logger.error(f"Özet veri hatası: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Özet veri hatası: {str(e)}"
+        )
+
+
+@router.get("/detection-status")
+async def get_detection_status() -> Dict:
+    """
+    Detection modülünün durumu hakkında detaylı bilgi döner.
+    
+    Returns:
+        dict: Detection modülü bağlantı durumu
+    """
+    detection_online = detection_service.health_check()
+    
     return {
-        "available_objects": DummyDetectionService.DETECTABLE_OBJECTS,
-        "total_count": len(DummyDetectionService.DETECTABLE_OBJECTS)
+        "detection_service_online": detection_online,
+        "detection_url": detection_service.detection_url,
+        "last_update": detection_service.get_detected_objects()["timestamp"],
+        "status": "operational" if detection_online else "offline"
     }
